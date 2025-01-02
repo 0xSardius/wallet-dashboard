@@ -17,7 +17,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/hooks/use-toast";
-import { Wallet } from "@coinbase/coinbase-sdk";
 import { createWallet, importWallet, exportWallet } from "@/lib/wallet";
 import { Avatar, Name, Address } from "@coinbase/onchainkit/identity";
 
