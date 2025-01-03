@@ -19,7 +19,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createWallet, importWallet, exportWallet } from "../../lib/wallet";
 import { Avatar, Name, Address } from "@coinbase/onchainkit/identity";
-import { WalletInstance } from "@/lib/types";
+import { WalletInstance, WalletData } from "@/lib/types";
+
+interface WalletCardProps {
+  onWalletUpdate?: (wallet: WalletInstance | null) => void;
+}
 
 export function WalletCard() {
   const [wallet, setWallet] = useState<WalletInstance | null>(null);

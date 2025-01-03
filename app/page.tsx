@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { OnchainProvider } from "@/components/providers/OnchainProvider";
+import { WalletCard } from "@/components/wallet/WalletCard";
+import { BalancesList } from "@/components/wallet/BalancesList";
 
 export default function DashboardPage() {
   return (
@@ -23,7 +25,7 @@ export default function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Wallet Connection Component will go here */}
+              <WalletCard onWalletUpdated={setWallet} />
             </CardContent>
           </Card>
 
@@ -41,7 +43,7 @@ export default function DashboardPage() {
                   <CardTitle>Token Balances</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {/* BalancesList component will go here */}
+                  <BalancesList wallet={wallet} />
                 </CardContent>
               </Card>
             </TabsContent>
