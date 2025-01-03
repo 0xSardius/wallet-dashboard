@@ -20,5 +20,5 @@ export interface Transaction {
 }
 
 export interface WalletData {
-  [key: string]: any;
+  [key: string]: string | number | boolean | object | null;
 }

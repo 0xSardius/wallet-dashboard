@@ -16,12 +16,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/components/hooks/use-toast";
-import { createWallet, importWallet, exportWallet } from "@/lib/wallet";
+import { useToast } from "@/hooks/use-toast";
+import { createWallet, importWallet, exportWallet } from "../../lib/wallet";
 import { Avatar, Name, Address } from "@coinbase/onchainkit/identity";
+import { WalletInstance } from "@/lib/types";
 
 export function WalletCard() {
-  const [wallet, setWallet] = useState<any>(null);
+  const [wallet, setWallet] = useState<WalletInstance | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -37,7 +38,9 @@ export function WalletCard() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create wallet. Please try again.",
+        description: `Failed to create wallet: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
         variant: "destructive",
       });
     } finally {
@@ -57,7 +60,9 @@ export function WalletCard() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to import wallet. Please check your wallet data.",
+        description: `Failed to import wallet: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
         variant: "destructive",
       });
     } finally {
@@ -89,7 +94,9 @@ export function WalletCard() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to export wallet data.",
+        description: `Failed to export wallet: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
         variant: "destructive",
       });
     }
