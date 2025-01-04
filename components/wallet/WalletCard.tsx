@@ -19,14 +19,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createWallet, importWallet, exportWallet } from "../../lib/wallet";
 import { Avatar, Name, Address } from "@coinbase/onchainkit/identity";
-import { WalletInstance, WalletData } from "@/lib/types";
+import { WalletInstance } from "@/lib/types";
 
 interface WalletCardProps {
-  onWalletUpdate?: (wallet: WalletInstance | null) => void;
+  wallet: WalletInstance | null;
+  onWalletUpdated: (wallet: WalletInstance | null) => void;
 }
 
-export function WalletCard() {
-  const [wallet, setWallet] = useState<WalletInstance | null>(null);
+export function WalletCard({ wallet, onWalletUpdated }: WalletCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -34,7 +34,7 @@ export function WalletCard() {
     setIsLoading(true);
     try {
       const newWallet = await createWallet();
-      setWallet(newWallet);
+      onWalletUpdated(newWallet);
       toast({
         title: "Wallet Created",
         description: "Your new wallet has been created successfully.",
@@ -56,7 +56,7 @@ export function WalletCard() {
     setIsLoading(true);
     try {
       const importedWallet = await importWallet(JSON.parse(walletData));
-      setWallet(importedWallet);
+      onWalletUpdated(importedWallet);
       toast({
         title: "Wallet Imported",
         description: "Your wallet has been imported successfully.",
@@ -104,6 +104,10 @@ export function WalletCard() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleDisconnect = () => {
+    onWalletUpdated(null);
   };
 
   return (
@@ -160,7 +164,7 @@ export function WalletCard() {
               <Button variant="outline" onClick={handleExportWallet}>
                 Export Wallet
               </Button>
-              <Button variant="destructive" onClick={() => setWallet(null)}>
+              <Button variant="destructive" onClick={handleDisconnect}>
                 Disconnect
               </Button>
             </div>

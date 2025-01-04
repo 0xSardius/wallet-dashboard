@@ -3,11 +3,14 @@ import { Wallet as CoinbaseWallet } from "@coinbase/coinbase-sdk";
 
 export type WalletInstance = CoinbaseWallet;
 
+export interface Asset {
+  id: string;
+  symbol: string;
+  name: string;
+}
+
 export interface Balance {
-  asset: {
-    symbol: string;
-    name: string;
-  };
+  asset: Asset;
   amount: string | number;
 }
 

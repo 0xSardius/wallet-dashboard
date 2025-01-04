@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -10,8 +11,11 @@ import {
 import { OnchainProvider } from "@/components/providers/OnchainProvider";
 import { WalletCard } from "@/components/wallet/WalletCard";
 import { BalancesList } from "@/components/wallet/BalancesList";
+import type { WalletInstance } from "@/lib/types";
 
 export default function DashboardPage() {
+  const [wallet, setWallet] = useState<WalletInstance | null>(null);
+
   return (
     <OnchainProvider>
       <div className="container mx-auto p-6">
@@ -25,7 +29,7 @@ export default function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <WalletCard onWalletUpdated={setWallet} />
+              <WalletCard wallet={wallet} onWalletUpdated={setWallet} />
             </CardContent>
           </Card>
 

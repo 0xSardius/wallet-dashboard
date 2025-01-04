@@ -8,16 +8,21 @@ import { RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { WalletInstance, Balance } from "@/lib/types";
 import { getWalletBalances } from "@/lib/wallet";
-import { Coinbase } from "@coinbase/coinbase-sdk";
 
 interface BalancesListProps {
   wallet: WalletInstance | null;
 }
 
-const COMMON_TOKENS = [
-  Coinbase.assets.Eth,
-  Coinbase.assets.Usdc,
-  Coinbase.assets.Weth,
+interface CommonToken {
+  symbol: string;
+  name: string;
+  id: string;
+}
+
+const COMMON_TOKENS: CommonToken[] = [
+  { symbol: "ETH", name: "Ethereum", id: "eth" },
+  { symbol: "USDC", name: "USD Coin", id: "usdc" },
+  { symbol: "WETH", name: "Wrapped Ethereum", id: "weth" },
 ];
 
 export function BalancesList({ wallet }: BalancesListProps) {
@@ -32,10 +37,13 @@ export function BalancesList({ wallet }: BalancesListProps) {
     try {
       const walletBalances = await getWalletBalances(wallet);
 
-      // Filter out zero balances and sort by amount
-      const sortedBalances = walletBalances
-        .filter((balance) => parseFloat(balance.amount.toString()) > 0)
-        .sort((a, b) => {
+      const balancesArray = Array.isArray(walletBalances)
+        ? walletBalances
+        : Object.values(walletBalances);
+
+      const sortedBalances = balancesArray
+        .filter((balance: Balance) => parseFloat(balance.amount.toString()) > 0)
+        .sort((a: Balance, b: Balance) => {
           const amountA = parseFloat(a.amount.toString());
           const amountB = parseFloat(b.amount.toString());
           return amountB - amountA;
@@ -45,7 +53,9 @@ export function BalancesList({ wallet }: BalancesListProps) {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to fetch balances. Please try again.",
+        description: `Failed to fetch balances: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
         variant: "destructive",
       });
     } finally {
@@ -86,19 +96,21 @@ export function BalancesList({ wallet }: BalancesListProps) {
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
-          {/* Show common tokens first, even with zero balance */}
-          {COMMON_TOKENS.map((tokenId) => {
-            const balance = balances.find((b) => b.asset.id === tokenId) || {
+          {COMMON_TOKENS.map((token) => {
+            const balance = balances.find(
+              (b) => b.asset.symbol.toLowerCase() === token.symbol.toLowerCase()
+            ) || {
               asset: {
-                id: tokenId,
-                symbol: tokenId.split(".").pop() || tokenId,
+                symbol: token.symbol,
+                name: token.name,
+                id: token.id,
               },
               amount: "0",
             };
 
             return (
               <div
-                key={balance.asset.id}
+                key={token.id}
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
@@ -113,12 +125,18 @@ export function BalancesList({ wallet }: BalancesListProps) {
             );
           })}
 
-          {/* Show other tokens with non-zero balances */}
           {balances
-            .filter((balance) => !COMMON_TOKENS.includes(balance.asset.id))
+            .filter(
+              (balance) =>
+                !COMMON_TOKENS.some(
+                  (token) =>
+                    token.symbol.toLowerCase() ===
+                    balance.asset.symbol.toLowerCase()
+                )
+            )
             .map((balance) => (
               <div
-                key={balance.asset.id}
+                key={balance.asset.id || balance.asset.symbol}
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
